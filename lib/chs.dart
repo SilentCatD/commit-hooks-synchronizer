@@ -41,6 +41,11 @@ Future<void> _deleteHookFiles(List<String> filePaths) async {
 
 Future<void> install({String? gitUrl, String? gitRef}) async {
   final chsConfig = await DotCHSConfigFile.getConfig();
+
+  if (chsConfig != null) {
+    await uninstall();
+  }
+
   final yamlConfig = await YamlConfig.parse();
   gitUrl ??= chsConfig?.gitUrl ?? yamlConfig.gitUrl;
 

@@ -1,19 +1,18 @@
 import 'dart:io';
 
-import 'package:chs/const.dart';
-import 'package:chs/errors.dart';
-import 'package:chs/utils.dart';
 import 'package:path/path.dart';
 import 'package:yaml/yaml.dart';
+
+import 'const.dart';
+import 'errors.dart';
+import 'utils.dart';
 
 class YamlConfig {
   final String? gitUrl;
   final String? ref;
-  final Map<String, String> hooksEntries;
 
   const YamlConfig({
     this.gitUrl,
-    this.hooksEntries = const {},
     this.ref,
   });
 
@@ -35,16 +34,6 @@ class YamlConfig {
     return YamlConfig(
       gitUrl: parsedYaml.value[ConfigKey.gitUrl] as String?,
       ref: parsedYaml.value[ConfigKey.ref] as String?,
-      hooksEntries:
-          _parseHooksEntries(parsedYaml.value[ConfigKey.hooksEntries]),
     );
-  }
-
-  static Map<String, String> _parseHooksEntries(dynamic value) {
-    if (value == null) {
-      return {};
-    }
-    if (value is! YamlMap) throw YamlFileWrongFormatException();
-    return value.map((key, val) => MapEntry(key.toString(), val.toString()));
   }
 }

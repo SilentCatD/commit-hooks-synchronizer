@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:chs/const.dart';
-import 'package:chs/errors.dart';
-import 'package:chs/logger.dart';
 import 'package:path/path.dart';
 import 'package:uuid/uuid.dart';
+
+import 'const.dart';
+import 'errors.dart';
+import 'logger.dart';
 
 void exitWithError(String message) {
   logger.stderr(message);

@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:chs/utils.dart';
 import 'package:path/path.dart';
 
 import 'const.dart';
+import 'utils.dart';
 
-class DotCHSConfigFile {
-  DotCHSConfigFile({
+class DotRemoteHooksConfigFile {
+  DotRemoteHooksConfigFile({
     required this.gitUrl,
     this.filePaths = const [],
     this.file,
@@ -30,14 +30,14 @@ class DotCHSConfigFile {
 
   Future<void> writeConfig() async {
     final localHooksDir = await _getGitHooksDirectory();
-    file = File(join(localHooksDir.path, kChsConfig));
+    file = File(join(localHooksDir.path, kRemoteHooksConfig));
     final configContents = [gitUrl, ...filePaths].join('\n');
     await file!.writeAsString(configContents);
   }
 
-  static Future<DotCHSConfigFile?> getConfig() async {
+  static Future<DotRemoteHooksConfigFile?> getConfig() async {
     final hooksDir = await _getGitHooksDirectory();
-    final chsConfig = File(join(hooksDir.path, kChsConfig));
+    final chsConfig = File(join(hooksDir.path, kRemoteHooksConfig));
 
     if (!await chsConfig.exists()) return null;
 
@@ -46,7 +46,7 @@ class DotCHSConfigFile {
         .toList();
     if (lines.isEmpty) return null;
 
-    return DotCHSConfigFile(
+    return DotRemoteHooksConfigFile(
       gitUrl: lines.first,
       filePaths: lines.skip(1).toList(),
       file: chsConfig,

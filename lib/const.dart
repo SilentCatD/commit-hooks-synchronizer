@@ -1,5 +1,5 @@
-const String yamlFileName = 'chs.yaml';
-const String kChsConfig = '.chsrc';
+const String yamlFileName = 'remotehooks.yaml';
+const String kRemoteHooksConfig = '.remotehooks';
 const String kDotGit = '.git';
 const String kGitIgnore = '.gitignore';
 const String kHooksIgnore = '.hooksignore';
@@ -25,5 +25,4 @@ const Set<String> kHooksSignature = {
 sealed class ConfigKey {
   static const String gitUrl = 'git-url';
   static const String ref = 'ref';
-  static const String hooksEntries = 'hooks-entries';
 }

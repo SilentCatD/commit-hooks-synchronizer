@@ -18,7 +18,7 @@ class YamlConfig {
   });
 
   static Future<File?> _getYamlFile({required String fileName}) async {
-    final filePath = join((await getLocalHooksDir()).path, fileName);
+    final filePath = join((await getGitDirectoryRoot()), fileName);
     final file = File(filePath);
     return await file.exists() ? file : null;
   }

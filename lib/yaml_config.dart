@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:chs/const.dart';
 import 'package:chs/errors.dart';
+import 'package:chs/utils.dart';
 import 'package:path/path.dart';
 import 'package:yaml/yaml.dart';
 
@@ -17,7 +18,7 @@ class YamlConfig {
   });
 
   static Future<File?> _getYamlFile({required String fileName}) async {
-    final filePath = join(Directory.current.path, fileName);
+    final filePath = join((await getLocalHooksDir()).path, fileName);
     final file = File(filePath);
     return await file.exists() ? file : null;
   }

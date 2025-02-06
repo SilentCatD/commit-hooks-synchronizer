@@ -88,7 +88,13 @@ Future<void> _copyHookFiles(Directory srcDir, Directory destDir,
     if (ignores.ignores(name)) {
       continue;
     }
-    if (name != kDotGit) {
+    if (name == kDotGit) {
+      continue;
+    }
+    if (name == kHooksIgnore) {
+      continue;
+    }
+    if (name == kGitIgnore) {
       continue;
     }
     if (entity is Directory) {

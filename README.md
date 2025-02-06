@@ -46,5 +46,72 @@ and multiple projects.
 
 ## Usage
 
+### Hooks installation
+
+```shell
+Usage: remote_hooks install [arguments]
+-h, --help    Print this usage information.
+-u, --url     Url to the remote repository
+-r, --ref     Repository ref to checkout
+```
+
+For example you can this command to install hooks from remote repository
+
+```shell
+remote_hooks install -u git@github.com:SilentCatD/where-you-store-hooks.git
+```
+
+Specify `ref` to switch branch or checkout a specific commit, this help with different hooks for
+different projects
+
+### Hooks uninstall hooks
+
+To uninstall, use:
+
+```shell
+remote_hooks uninstall
+```
+
+### Configuration
+
+You can also store the information about `url` and `ref` in a config file.
+At the root of your repository, create a `remotehooks.yaml` file, inside you can specify these 2
+keys:
+
+```yaml
+git-url: git@github.com:SilentCatD/where-you-store-hooks.git
+ref: develop
+```
+
+### Hooks repository structure (Remote repository)
+
+Contents of the remote hooks repository will be copied to `.git/hooks`, in the remote repository,
+you can add a `.hooksignore` to exclude files and folders from being copied.
+
+Patterns defined inside `.hooksignore` and `.gitignore` will be merged together to create a final
+exclusive list of patterns.
+
+File extension of files at the root level is not important, as they will be omitted when copying
+
+Example of a repository structure for `pre-commit` and `pre-push` with hooks written in python
+
+```shell
+├── .gitignore
+├── .hooksignore
+├── hooks_utils
+│ ├── formatter_utils.py
+│ └── printer_utils.py
+├── pre-commit.py
+└── pre-push.py
+```
+
+## Additional information
+
+For additional command details, use `remote_hooks -h`
+
+```shell
+remote_hooks <command> -h
+```
+
 
 

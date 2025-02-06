@@ -164,8 +164,8 @@ Future<void> _writeUpdatedHooks(Directory localHooksDir,
 
 Future<void> _writeConfigFile(String gitUrl, Set<String> configContents) async {
   logger.stdout("Writing config file...");
-  final configFile =
-      DotRemoteHooksConfigFile(gitUrl: gitUrl, filePaths: configContents.toList());
+  final configFile = DotRemoteHooksConfigFile(
+      gitUrl: gitUrl, filePaths: configContents.toList());
   await configFile.writeConfig();
   logger.stdout("Hooks installed successfully!");
 }

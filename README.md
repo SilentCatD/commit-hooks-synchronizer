@@ -61,8 +61,11 @@ For example, you can use this command to install hooks from a remote repository.
 remote_hooks install -u git@github.com:SilentCatD/where-you-store-hooks.git
 ```
 
-Specify `ref` with `-r` to switch branches or check out a specific commit. This helps with using 
+Specify `ref` with `-r` to switch branches or check out a specific commit. This helps with using
 different hooks for different projects.
+
+Once installed via the command line, even without any other configuration files specified, you can
+reinstall using the `install` command without needing to specify the `-u` flag.
 
 ### Hooks uninstall hooks
 
@@ -75,7 +78,7 @@ remote_hooks uninstall
 ### Configuration
 
 You can also store the url and ref information in a config file.
-At the root of your repository, create a `remotehooks.yaml` file. Inside, you can specify these 
+At the root of your repository, create a `remotehooks.yaml` file. Inside, you can specify these
 two keys:
 
 ```yaml
@@ -85,13 +88,14 @@ ref: develop
 
 ### Hooks repository structure (Remote repository)
 
-Contents of the remote hooks repository will be copied to `.git/hooks`. In the remote repository, 
+Contents of the remote hooks repository will be copied to `.git/hooks`. In the remote repository,
 you can add a `.hooksignore` file to exclude specific files and folders from being copied.
 
-Patterns defined inside `.hooksignore` and `.gitignore` will be merged to create a final exclusion 
+Patterns defined inside `.hooksignore` and `.gitignore` will be merged to create a final exclusion
 list.
 
-The file extension of files at the root level is not important, as they will be omitted when copying.
+The file extension of files at the root level is not important, as they will be omitted when
+copying.
 
 Example of a repository structure for `pre-commit` and `pre-push` hooks written in Python:
 

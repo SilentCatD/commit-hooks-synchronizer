@@ -3,10 +3,8 @@ import 'commands/install_command.dart';
 import 'commands/uninstall_command.dart';
 
 void main(List<String> arguments) {
-  CommandRunner(
-      "chs",
-      "chs - Commit Hooks Synchronizer - a CLI to share & "
-          "sync git git hooks.")
+  CommandRunner("remote_hooks",
+      "remote_hooks - a CLI to share & install git hooks from remote repository.")
     ..addCommand(InstallCommand())
     ..addCommand(UninstallCommand())
     ..argParser.addFlag('verbose',

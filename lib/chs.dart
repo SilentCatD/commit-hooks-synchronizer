@@ -123,10 +123,10 @@ Future<void> _removeExistingHooks(
 
     if (kHooksSignature.contains(hookName)) {
       hookContents[hookName] = HookContent(await file.readAsString());
-    }
-    final localHookFile = File(join(localHookDir.path, fileName));
-    if (await localHookFile.exists()) {
-      await localHookFile.delete();
+      final localHookFile = File(join(localHookDir.path, fileName));
+      if (await localHookFile.exists()) {
+        await localHookFile.delete();
+      }
     }
   }
 }

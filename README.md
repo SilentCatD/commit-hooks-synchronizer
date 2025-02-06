@@ -55,14 +55,14 @@ Usage: remote_hooks install [arguments]
 -r, --ref     Repository ref to checkout
 ```
 
-For example you can this command to install hooks from remote repository
+For example, you can use this command to install hooks from a remote repository.
 
 ```shell
 remote_hooks install -u git@github.com:SilentCatD/where-you-store-hooks.git
 ```
 
-Specify `ref` to switch branch or checkout a specific commit, this help with different hooks for
-different projects
+Specify `ref` with `-r` to switch branches or check out a specific commit. This helps with using 
+different hooks for different projects.
 
 ### Hooks uninstall hooks
 
@@ -74,9 +74,9 @@ remote_hooks uninstall
 
 ### Configuration
 
-You can also store the information about `url` and `ref` in a config file.
-At the root of your repository, create a `remotehooks.yaml` file, inside you can specify these 2
-keys:
+You can also store the url and ref information in a config file.
+At the root of your repository, create a `remotehooks.yaml` file. Inside, you can specify these 
+two keys:
 
 ```yaml
 git-url: git@github.com:SilentCatD/where-you-store-hooks.git
@@ -85,15 +85,15 @@ ref: develop
 
 ### Hooks repository structure (Remote repository)
 
-Contents of the remote hooks repository will be copied to `.git/hooks`, in the remote repository,
-you can add a `.hooksignore` to exclude files and folders from being copied.
+Contents of the remote hooks repository will be copied to `.git/hooks`. In the remote repository, 
+you can add a `.hooksignore` file to exclude specific files and folders from being copied.
 
-Patterns defined inside `.hooksignore` and `.gitignore` will be merged together to create a final
-exclusive list of patterns.
+Patterns defined inside `.hooksignore` and `.gitignore` will be merged to create a final exclusion 
+list.
 
-File extension of files at the root level is not important, as they will be omitted when copying
+The file extension of files at the root level is not important, as they will be omitted when copying.
 
-Example of a repository structure for `pre-commit` and `pre-push` with hooks written in python
+Example of a repository structure for `pre-commit` and `pre-push` hooks written in Python:
 
 ```shell
 ├── .gitignore

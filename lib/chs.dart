@@ -102,7 +102,8 @@ Future<void> _replaceHookContents(
     Set<String> configContents) async {
   final hookContents = <String, HookContent>{};
 
-  await _removeExistingHooks(clonedHooksDir, hookContents, configContents);
+  await _removeExistingHooks(
+      clonedHooksDir, localHooksDir, hookContents, configContents);
   await _applyCustomHookOverrides(
       localHooksDir, hooksEntries, hookContents, configContents);
   await _writeUpdatedHooks(localHooksDir, hookContents, configContents);

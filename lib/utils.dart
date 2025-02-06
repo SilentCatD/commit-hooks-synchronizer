@@ -48,13 +48,15 @@ Future<Directory> getTemporaryDirectory() async {
   return Directory(tempDirPath);
 }
 
-Future<void> cloneHooksRepo(String gitUrl, String? ref, Directory cloneDir) async {
+Future<void> cloneHooksRepo(
+    String gitUrl, String? ref, Directory cloneDir) async {
   final process = logger.progress("Cloning hooks repo to: ${cloneDir.path}");
   await executeCommand('git', ['clone', gitUrl, cloneDir.path]);
   process.finish();
 
   if (ref != null) {
     logger.stdout("Checking out ref: $ref");
-    await executeCommand('git', ['checkout', ref], workingDirectory: cloneDir.path);
+    await executeCommand('git', ['checkout', ref],
+        workingDirectory: cloneDir.path);
   }
 }

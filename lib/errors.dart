@@ -18,7 +18,8 @@ class ProcessExecutionException implements Exception {
   const ProcessExecutionException(this.message);
 
   @override
-  String toString() => message.isNotEmpty ? message : 'Process execution error.';
+  String toString() =>
+      message.isNotEmpty ? message : 'Process execution error.';
 }
 
 class FileNotFoundException implements Exception {

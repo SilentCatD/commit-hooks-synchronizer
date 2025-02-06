@@ -108,16 +108,24 @@ Future<void> _replaceHookContents(
   await _writeUpdatedHooks(localHooksDir, hookContents, configContents);
 }
 
-Future<void> _removeExistingHooks(Directory clonedHooksDir,
-    Map<String, HookContent> hookContents, Set<String> configContents) async {
+Future<void> _removeExistingHooks(
+    Directory clonedHooksDir,
+    Directory localHookDir,
+    Map<String, HookContent> hookContents,
+    Set<String> configContents) async {
   final existingFiles =
       (await clonedHooksDir.list().toList()).whereType<File>().toList();
 
   for (final file in existingFiles) {
+    final fileName = basename(file.path);
     final hookName = basenameWithoutExtension(file.path);
 
     if (kHooksSignature.contains(hookName)) {
       hookContents[hookName] = HookContent(await file.readAsString());
+    }
+    final localHookFile = File(join(localHookDir.path, fileName));
+    if (await localHookFile.exists()) {
+      await localHookFile.delete();
     }
   }
 }

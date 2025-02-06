@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:chs/const.dart';
 import 'package:chs/errors.dart';
 import 'package:chs/logger.dart';
 import 'package:path/path.dart';
@@ -59,4 +60,18 @@ Future<void> cloneHooksRepo(
     await executeCommand('git', ['checkout', ref],
         workingDirectory: cloneDir.path);
   }
+}
+
+Future<List<String>> loadIgnorePatterns(Directory clonedDir) async {
+  final List<String> results = [];
+  final gitIgnoreFile = File(join(clonedDir.path, kGitIgnore));
+  final hooksIgnoreFile = File(join(clonedDir.path, kHooksIgnore));
+
+  if (await gitIgnoreFile.exists()) {
+    results.addAll(await gitIgnoreFile.readAsLines());
+  }
+  if (await hooksIgnoreFile.exists()) {
+    results.addAll(await hooksIgnoreFile.readAsLines());
+  }
+  return results;
 }

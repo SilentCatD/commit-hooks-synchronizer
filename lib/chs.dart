@@ -2,8 +2,8 @@ import 'dart:io';
 import 'package:chs/dot_chsconfig_file.dart';
 import 'package:chs/errors.dart';
 import 'package:chs/hook_content.dart';
+import 'package:chs/ignore.dart';
 import 'package:chs/yaml_config.dart';
-import 'package:io/io.dart';
 import 'package:path/path.dart';
 
 import 'const.dart';
@@ -70,7 +70,9 @@ Future<void> _writeHooks(Map<String, String> hooksEntries,
   final configContents = <String>{};
   final process = logger.progress("Copying files...");
 
-  await _copyHookFiles(clonedHooksDir, localHooksDir, configContents);
+  final ignorePatterns = await loadIgnorePatterns(clonedHooksDir);
+  final ignores = Ignore(ignorePatterns);
+  await _copyHookFiles(clonedHooksDir, localHooksDir, configContents, ignores);
   await _replaceHookContents(
       hooksEntries, clonedHooksDir, localHooksDir, configContents);
 
@@ -78,18 +80,25 @@ Future<void> _writeHooks(Map<String, String> hooksEntries,
   await _writeConfigFile(gitUrl, configContents);
 }
 
-Future<void> _copyHookFiles(
-    Directory srcDir, Directory destDir, Set<String> configContents) async {
-  for (final entity in await srcDir.list().toList()) {
+// https://gist.github.com/thosakwe/681056e86673e73c4710cfbdfd2523a8
+Future<void> _copyHookFiles(Directory srcDir, Directory destDir,
+    Set<String> configContents, Ignore ignores) async {
+  await for (var entity in srcDir.list(recursive: false)) {
     final name = basename(entity.path);
+    if (ignores.ignores(name)) {
+      continue;
+    }
+    if (name != kDotGit) {
+      continue;
+    }
     if (entity is Directory) {
-      if (name != kDotGit) {
-        await copyPath(entity.path, join(destDir.path, name));
-        configContents.add(name);
-      }
+      var newDirectory = Directory(join(destDir.absolute.path, name));
+      await newDirectory.create();
+      configContents.add(name);
+      await _copyHookFiles(
+          entity.absolute, newDirectory, configContents, ignores);
     } else if (entity is File) {
-      await File(join(destDir.path, name))
-          .writeAsString(await entity.readAsString());
+      await entity.copy(join(destDir.path, name));
       configContents.add(name);
     }
   }

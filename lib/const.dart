@@ -1,6 +1,8 @@
 const String yamlFileName = 'chs.yaml';
 const String kChsConfig = '.chsrc';
 const String kDotGit = '.git';
+const String kGitIgnore = '.gitignore';
+const String kHooksIgnore = '.hooksignore';
 
 /// Set of supported Git hooks
 const Set<String> kHooksSignature = {

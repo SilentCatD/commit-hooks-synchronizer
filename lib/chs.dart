@@ -90,25 +90,25 @@ Future<void> _copyHookFiles(Directory srcDir, Directory destDir,
     Set<String> configContents, Ignore ignores) async {
   await for (var entity in srcDir.list(recursive: false)) {
     final name = basename(entity.path);
-    if (ignores.ignores(name)) {
-      continue;
-    }
-    if (name == kDotGit) {
-      continue;
-    }
-    if (name == kHooksIgnore) {
-      continue;
-    }
-    if (name == kGitIgnore) {
+    if (ignores.ignores(entity.path)) {
       continue;
     }
     if (entity is Directory) {
+      if (name == kDotGit) {
+        continue;
+      }
       var newDirectory = Directory(join(destDir.absolute.path, name));
       await newDirectory.create();
       configContents.add(name);
       await _copyHookFiles(
           entity.absolute, newDirectory, configContents, ignores);
     } else if (entity is File) {
+      if (name == kHooksIgnore) {
+        continue;
+      }
+      if (name == kGitIgnore) {
+        continue;
+      }
       await entity.copy(join(destDir.path, name));
       configContents.add(name);
     }

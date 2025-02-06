@@ -71,7 +71,8 @@ Future<void> _writeHooks(Map<String, String> hooksEntries,
   final process = logger.progress("Copying files...");
 
   await _copyHookFiles(clonedHooksDir, localHooksDir, configContents);
-  await _replaceHookContents(hooksEntries, localHooksDir, configContents);
+  await _replaceHookContents(
+      hooksEntries, clonedHooksDir, localHooksDir, configContents);
 
   process.finish(message: "Files copied");
   await _writeConfigFile(gitUrl, configContents);
@@ -94,29 +95,29 @@ Future<void> _copyHookFiles(
   }
 }
 
-Future<void> _replaceHookContents(Map<String, String> hooksEntries,
-    Directory localHooksDir, Set<String> configContents) async {
+Future<void> _replaceHookContents(
+    Map<String, String> hooksEntries,
+    Directory clonedHooksDir,
+    Directory localHooksDir,
+    Set<String> configContents) async {
   final hookContents = <String, HookContent>{};
 
-  await _removeExistingHooks(localHooksDir, hookContents, configContents);
+  await _removeExistingHooks(clonedHooksDir, hookContents, configContents);
   await _applyCustomHookOverrides(
       localHooksDir, hooksEntries, hookContents, configContents);
   await _writeUpdatedHooks(localHooksDir, hookContents, configContents);
 }
 
-Future<void> _removeExistingHooks(Directory localHooksDir,
+Future<void> _removeExistingHooks(Directory clonedHooksDir,
     Map<String, HookContent> hookContents, Set<String> configContents) async {
   final existingFiles =
-      (await localHooksDir.list().toList()).whereType<File>().toList();
+      (await clonedHooksDir.list().toList()).whereType<File>().toList();
 
   for (final file in existingFiles) {
-    final baseName = basename(file.path);
     final hookName = basenameWithoutExtension(file.path);
 
     if (kHooksSignature.contains(hookName)) {
       hookContents[hookName] = HookContent(await file.readAsString());
-      await file.delete();
-      configContents.remove(baseName);
     }
   }
 }

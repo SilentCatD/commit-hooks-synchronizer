@@ -77,7 +77,8 @@ Future<void> _writeHooks(Map<String, String> hooksEntries,
 
   final ignorePatterns = await loadIgnorePatterns(clonedHooksDir);
   final ignores = Ignore(ignorePatterns);
-  await _copyHookFiles(clonedHooksDir, localHooksDir, configContents, ignores);
+  await _copyHookFiles(
+      clonedHooksDir, clonedHooksDir, localHooksDir, configContents, ignores);
   await _replaceHookContents(
       hooksEntries, clonedHooksDir, localHooksDir, configContents);
 
@@ -86,23 +87,27 @@ Future<void> _writeHooks(Map<String, String> hooksEntries,
 }
 
 // https://gist.github.com/thosakwe/681056e86673e73c4710cfbdfd2523a8
-Future<void> _copyHookFiles(Directory srcDir, Directory destDir,
-    Set<String> configContents, Ignore ignores) async {
+Future<void> _copyHookFiles(Directory rootSrcDir, Directory srcDir,
+    Directory destDir, Set<String> configContents, Ignore ignores) async {
   await for (var entity in srcDir.list(recursive: false)) {
     final name = basename(entity.path);
-    if (ignores.ignores(entity.path)) {
-      continue;
-    }
+    final rootRelative = relative(entity.path, from: rootSrcDir.path);
     if (entity is Directory) {
       if (name == kDotGit) {
+        continue;
+      }
+      if (ignores.ignores(join(rootRelative, '.'))) {
         continue;
       }
       var newDirectory = Directory(join(destDir.absolute.path, name));
       await newDirectory.create();
       configContents.add(name);
       await _copyHookFiles(
-          entity.absolute, newDirectory, configContents, ignores);
+          rootSrcDir, entity.absolute, newDirectory, configContents, ignores);
     } else if (entity is File) {
+      if (ignores.ignores(rootRelative)) {
+        continue;
+      }
       if (name == kHooksIgnore) {
         continue;
       }

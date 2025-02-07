@@ -18,25 +18,25 @@ and the Flutter guide for
 Add `remote_hooks` to your project's `dev_dependencies`:
 
 ```shell
-dart pub add dev:remote_hooks
+$ dart pub add dev:remote_hooks
 ```
 
 Then, interact with it inside your project using:
 
 ```shell
-dart run remote_hooks -h
+$ dart run remote_hooks -h
 ```
 
 Alternatively, install it globally:
 
 ```shell
-dart pub global activate remote_hooks
+$ dart pub global activate remote_hooks
 ```
 
 Once installed globally, you can use it anywhere:
 
 ```shell
-remote_hooks -h
+$ remote_hooks -h
 ```
 
 ## Features
@@ -49,6 +49,8 @@ and multiple projects.
 ### Hooks installation
 
 ```shell
+$ remote_hooks -h
+
 Usage: remote_hooks install [arguments]
 -h, --help    Print this usage information.
 -u, --url     Url to the remote repository
@@ -58,7 +60,7 @@ Usage: remote_hooks install [arguments]
 For example, you can use this command to install hooks from a remote repository.
 
 ```shell
-remote_hooks install -u git@github.com:SilentCatD/where-you-store-hooks.git
+$ remote_hooks install -u git@github.com:SilentCatD/where-you-store-hooks.git
 ```
 
 Specify `ref` with `-r` to switch branches or check out a specific commit. This helps with using
@@ -72,7 +74,7 @@ reinstall using the `install` command without needing to specify the `-u` flag.
 To uninstall, use:
 
 ```shell
-remote_hooks uninstall
+$ remote_hooks uninstall
 ```
 
 ### Configuration
@@ -114,7 +116,7 @@ Example of a repository structure for `pre-commit` and `pre-push` hooks written 
 For additional command details, use `remote_hooks -h`
 
 ```shell
-remote_hooks <command> -h
+$ remote_hooks <command> -h
 ```
 
 

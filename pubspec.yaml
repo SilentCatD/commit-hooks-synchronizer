@@ -1,8 +1,23 @@
 name: remote_hooks
 description: A CLI tool to share & install git hooks from remote repository
-version: 1.0.2
+version: 1.0.3
 repository: https://github.com/SilentCatD/remote_hooks
 issue_tracker: https://github.com/SilentCatD/remote_hooks/issues
+
+topics:
+  - cli
+  - githooks
+  - pre-commit
+  - generator
+
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
 
 environment:
   sdk: ^3.4.3

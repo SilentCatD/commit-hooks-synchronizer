@@ -49,7 +49,7 @@ and multiple projects.
 ### Hooks installation
 
 ```shell
-$ remote_hooks -h
+$ remote_hooks install -h
 
 Usage: remote_hooks install [arguments]
 -h, --help    Print this usage information.

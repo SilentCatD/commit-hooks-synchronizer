@@ -1,3 +1,7 @@
+## 1.0.4
+
+- Docs
+ 
 ## 1.0.3
 
 - Update supported version

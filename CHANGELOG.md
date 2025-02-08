@@ -1,3 +1,7 @@
+## 1.1.0
+
+- Add install and uninstall scripts
+ 
 ## 1.0.5
 
 - Add to bin

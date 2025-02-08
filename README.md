@@ -69,7 +69,7 @@ different hooks for different projects.
 Once installed via the command line, even without any other configuration files specified, you can
 reinstall using the `install` command without needing to specify the `-u` flag.
 
-### Hooks uninstall hooks
+### Uninstall hooks
 
 To uninstall, use:
 

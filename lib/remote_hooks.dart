@@ -41,14 +41,14 @@ Future<void> _deleteHookFiles(List<String> filePaths) async {
 }
 
 Future<void> install({String? gitUrl, String? gitRef}) async {
-  final chsConfig = await DotRemoteHooksConfigFile.getConfig();
+  final remoteHooksConfigFile = await DotRemoteHooksConfigFile.getConfig();
 
-  if (chsConfig != null) {
+  if (remoteHooksConfigFile != null) {
     await uninstall();
   }
 
   final yamlConfig = await YamlConfig.parse();
-  gitUrl ??= chsConfig?.gitUrl ?? yamlConfig.gitUrl;
+  gitUrl ??= remoteHooksConfigFile?.gitUrl ?? yamlConfig.gitUrl;
 
   if (gitUrl == null) {
     throw GitUrlNotSpecifiedException();

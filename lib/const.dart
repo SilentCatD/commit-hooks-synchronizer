@@ -3,6 +3,8 @@ const String kRemoteHooksConfig = '.remotehooks';
 const String kDotGit = '.git';
 const String kGitIgnore = '.gitignore';
 const String kHooksIgnore = '.hooksignore';
+const String kHooksInstallScripts = 'install';
+const String kHooksUninstallScripts = 'install';
 
 /// Set of supported Git hooks
 const Set<String> kHooksSignature = {

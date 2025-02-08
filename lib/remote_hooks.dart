@@ -20,6 +20,8 @@ Future<void> uninstall() async {
 
   await _deleteHookFiles(chsConfig.filePaths);
   await chsConfig.delete();
+  final hooksDir = await getLocalHooksDir();
+  await _runUninstallScript(hooksDir);
 
   process.finish(message: "Hooks uninstalled!");
 }
@@ -77,9 +79,61 @@ Future<void> _writeHooks(Directory clonedHooksDir, String gitUrl) async {
   await _copyHookFiles(
       clonedHooksDir, clonedHooksDir, localHooksDir, configContents, ignores);
   await _replaceHookContents(clonedHooksDir, localHooksDir, configContents);
-
+  await _replaceInstallAndUninstallFiles(
+      clonedHooksDir, localHooksDir, configContents);
+  await _replaceInstallAndUninstallFiles(
+      clonedHooksDir, localHooksDir, configContents);
   process.finish(message: "Files copied");
   await _writeConfigFile(gitUrl, configContents);
+  logger.stdout("Hooks installed successfully!");
+  await _runInstallScript(localHooksDir);
+}
+
+Future<void> _replaceInstallAndUninstallFiles(Directory clonedHooksDir,
+    Directory localHookDir, Set<String> configContents) async {
+  final existingFiles =
+      (await clonedHooksDir.list().toList()).whereType<File>().toList();
+
+  final Map<String, String> scripts = {};
+
+  for (final file in existingFiles) {
+    final fileName = basename(file.path);
+    final scriptName = basenameWithoutExtension(file.path);
+
+    if ({kHooksInstallScripts, kHooksUninstallScripts}.contains(scriptName)) {
+      final localFile = File(join(localHookDir.path, fileName));
+      scripts[scriptName] = await localFile.readAsString();
+      configContents.remove(fileName);
+      configContents.add(scriptName);
+      if (await localFile.exists()) {
+        await localFile.delete();
+      }
+    }
+  }
+
+  for (final scriptEntry in scripts.entries) {
+    final localFile = File(join(localHookDir.path, scriptEntry.key));
+    await localFile.writeAsString(scriptEntry.value);
+    await _makeExecutable(localFile.path);
+  }
+}
+
+Future<void> _runInstallScript(Directory localDir) async {
+  final installFile = File(join(localDir.path, kHooksInstallScripts));
+  if (!await installFile.exists()) {
+    return;
+  }
+  logger.stdout("Running install script...");
+  await Process.run(installFile.path, []);
+}
+
+Future<void> _runUninstallScript(Directory localDir) async {
+  final uninstallFile = File(join(localDir.path, kHooksUninstallScripts));
+  if (!await uninstallFile.exists()) {
+    return;
+  }
+  logger.stdout("Running uninstall script...");
+  await Process.run(uninstallFile.path, []);
 }
 
 // https://gist.github.com/thosakwe/681056e86673e73c4710cfbdfd2523a8
@@ -97,7 +151,7 @@ Future<void> _copyHookFiles(Directory rootSrcDir, Directory srcDir,
       }
       var newDirectory = Directory(join(destDir.absolute.path, name));
       await newDirectory.create();
-      configContents.add(name);
+      configContents.add(rootRelative);
       await _copyHookFiles(
           rootSrcDir, entity.absolute, newDirectory, configContents, ignores);
     } else if (entity is File) {
@@ -111,7 +165,7 @@ Future<void> _copyHookFiles(Directory rootSrcDir, Directory srcDir,
         continue;
       }
       await entity.copy(join(destDir.path, name));
-      configContents.add(name);
+      configContents.add(rootRelative);
     }
   }
 }
@@ -155,10 +209,13 @@ Future<void> _writeUpdatedHooks(Directory localHooksDir,
     final file = File(hookFilePath);
     await file.writeAsString(entry.value);
     configContents.add(entry.key);
+    await _makeExecutable(hookFilePath);
+  }
+}
 
-    if (!Platform.isWindows) {
-      await executeCommand('chmod', ['+x', hookFilePath]);
-    }
+Future<void> _makeExecutable(String path) async {
+  if (!Platform.isWindows) {
+    await executeCommand('chmod', ['+x', path]);
   }
 }
 
@@ -167,5 +224,4 @@ Future<void> _writeConfigFile(String gitUrl, Set<String> configContents) async {
   final configFile = DotRemoteHooksConfigFile(
       gitUrl: gitUrl, filePaths: configContents.toList());
   await configFile.writeConfig();
-  logger.stdout("Hooks installed successfully!");
 }

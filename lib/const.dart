@@ -4,7 +4,7 @@ const String kDotGit = '.git';
 const String kGitIgnore = '.gitignore';
 const String kHooksIgnore = '.hooksignore';
 const String kHooksInstallScripts = 'install';
-const String kHooksUninstallScripts = 'install';
+const String kHooksUninstallScripts = 'uninstall';
 
 /// Set of supported Git hooks
 const Set<String> kHooksSignature = {

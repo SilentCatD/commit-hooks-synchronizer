@@ -1,6 +1,7 @@
 ## 1.1.0
 
 - Add install and uninstall scripts
+- Consider a .hooksignore and .gitignore when removing files
  
 ## 1.0.5
 

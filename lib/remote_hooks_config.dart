@@ -43,7 +43,7 @@ class RemoteHooksConfig {
   Future<void> loadConfig({required Directory directory}) async {
     final configFile = File(join(directory.path, kRemoteHooksConfig));
 
-    if (!await configFile.exists()) return null;
+    if (!await configFile.exists()) return;
 
     final lines = (await configFile.readAsLines())
         .where((line) => line.trim().isNotEmpty)

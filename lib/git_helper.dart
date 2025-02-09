@@ -4,7 +4,6 @@ import 'package:path/path.dart';
 import 'package:remote_hooks/file_helper.dart';
 import 'package:remote_hooks/process_helper.dart';
 
-import 'logger.dart';
 
 class GitHelper {
   GitHelper({
@@ -43,8 +42,9 @@ class GitHelper {
     if (_gitDirectoryRoot != null) {
       return _gitDirectoryRoot!;
     }
-    final rootPath = await processHelper
-        .executeCommand('git', ['rev-parse', '--show-toplevel'], processMessage: "Locating repository root");
+    final rootPath = await processHelper.executeCommand(
+        'git', ['rev-parse', '--show-toplevel'],
+        processMessage: "Locating repository root");
     _gitDirectoryRoot ??= Directory(rootPath);
     return _gitDirectoryRoot!;
   }
@@ -66,10 +66,12 @@ class GitHelper {
 
   Future<void> cloneRepository(
       String gitUrl, String? ref, Directory cloneDir) async {
-    await processHelper.executeCommand('git', ['clone', gitUrl, cloneDir.path], processMessage: "Cloning $gitUrl");
+    await processHelper.executeCommand('git', ['clone', gitUrl, cloneDir.path],
+        processMessage: "Cloning $gitUrl");
     if (ref != null) {
       await processHelper.executeCommand('git', ['checkout', ref],
-          workingDirectory: cloneDir.path, processMessage: "Checking out ref: $ref");
+          workingDirectory: cloneDir.path,
+          processMessage: "Checking out ref: $ref");
     }
   }
 }

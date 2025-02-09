@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:path/path.dart';
-import 'package:remote_hooks/logger.dart';
 import 'package:remote_hooks/process_helper.dart';
 import 'package:uuid/uuid.dart';
 

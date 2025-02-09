@@ -24,8 +24,9 @@ class RemoteHooksConfig {
       if (depth != 0) {
         return false;
       }
-      final filename = basename(entity.path);
-      if (filePaths.contains(filename) || filename == kRemoteHooksConfig) {
+      final relativePath = relative(entity.path);
+      if (filePaths.contains(relativePath) ||
+          relativePath == kRemoteHooksConfig) {
         await entity.delete();
       }
       return true;

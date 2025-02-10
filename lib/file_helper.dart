@@ -50,17 +50,18 @@ class FileHelper {
   Future<void> copy(Directory source, Directory destination,
       {ShouldCopy? shouldCopy, PostCopy? postCopy}) async {
     await visit(source, (entity, depth) async {
-      final name = basename(entity.path);
+      final relativePath = relative(entity.path, from: source.path);
       final shouldCopyEntity = shouldCopy?.call(entity, depth) ?? true;
       if (!shouldCopyEntity) {
         return false;
       }
       if (entity is Directory) {
-        var newDirectory = Directory(join(destination.absolute.path, name));
+        var newDirectory =
+            Directory(join(destination.absolute.path, relativePath));
         await newDirectory.create();
         await postCopy?.call(newDirectory, depth);
       } else if (entity is File) {
-        final copied = await entity.copy(join(destination.path, name));
+        final copied = await entity.copy(join(destination.path, relativePath));
         await postCopy?.call(copied, depth);
       }
       return true;

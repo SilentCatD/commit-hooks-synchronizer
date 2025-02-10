@@ -124,8 +124,8 @@ To achieve this, in the root of the remote repository, you can add 2 extra addit
 ├── .hooksignore
 ├── pre-commit.py
 └── pre-push.py
-└── install.py (new)
-└── uninstall.py (new)
+└── post-install.py (new)
+└── post-uninstall.py (new)
 ```
 
 The file extension is not important and will also be omitted when copying to `.git/hooks`.

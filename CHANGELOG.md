@@ -1,3 +1,7 @@
+## 1.1.2
+
+- Handle case not have local hooks
+
 ## 1.1.1
 
 - Update doc

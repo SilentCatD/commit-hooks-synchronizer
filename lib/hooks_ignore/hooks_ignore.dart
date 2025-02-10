@@ -60,7 +60,7 @@ class HooksIgnore {
       }
       if (shouldIgnore(relativePath) ||
           basename(relativePath) == kHooksIgnore) {
-        await entity.delete();
+        await entity.delete(recursive: true);
       }
       return true;
     });

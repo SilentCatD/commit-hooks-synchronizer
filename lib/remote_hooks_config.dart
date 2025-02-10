@@ -20,14 +20,17 @@ class RemoteHooksConfig {
   static const String kRemoteHooksConfig = '.remotehooks';
 
   Future<void> cleanUpFiles(Directory directory) async {
+    final trackedFilePaths = filePaths.toSet();
     await fileHelper.visit(directory, (entity, depth) async {
       if (depth != 0) {
         return false;
       }
-      final relativePath = relative(entity.path);
-      if (filePaths.contains(relativePath) ||
+      final relativePath = relative(entity.path, from: directory.path);
+      if (trackedFilePaths.contains(relativePath) ||
           relativePath == kRemoteHooksConfig) {
-        await entity.delete();
+        if (await entity.exists()) {
+          await entity.delete(recursive: true);
+        }
       }
       return true;
     });

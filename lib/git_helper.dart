@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:remote_hooks/file_helper.dart';
-import 'package:remote_hooks/logger.dart';
 import 'package:remote_hooks/process_helper.dart';
 
 class GitHelper {
@@ -71,18 +70,12 @@ class GitHelper {
 
   Future<void> executePostInstall(Directory directory) async {
     final file = File(join(directory.path, postInstall));
-    final result = await processHelper.executeFileIfExist(file);
-    if (result != null) {
-      logger.stdout(result);
-    }
+    await processHelper.executeFileIfExist(file);
   }
 
-  Future<void> executePostUninstall(Directory directory) async {
+  Future<void> executePreUninstall(Directory directory) async {
     final file = File(join(directory.path, postUninstall));
-    final result = await processHelper.executeFileIfExist(file);
-    if (result != null) {
-      logger.stdout(result);
-    }
+    await processHelper.executeFileIfExist(file);
   }
 
   Future<void> cloneRepository(

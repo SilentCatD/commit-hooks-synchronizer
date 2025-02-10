@@ -114,7 +114,7 @@ Example of a repository structure for `pre-commit` and `pre-push` hooks written 
 ### Install & uninstall scripts
 
 Aside from regular hooks trigger, additional scripts can be add to the remote repository to be ran
-during `remote_hooks install` and `remote_hooks uninstall` happen. These script must be executable
+during `remote_hooks install` and `remote_hooks uninstall`. These script must be executable
 and can be used to clean up resources or generate log information.
 
 To achieve this, in the root of the remote repository, you can add 2 extra additional scripts:
@@ -125,7 +125,7 @@ To achieve this, in the root of the remote repository, you can add 2 extra addit
 ├── pre-commit.py
 └── pre-push.py
 └── post-install.py (new)
-└── post-uninstall.py (new)
+└── pre-uninstall.py (new)
 ```
 
 The file extension is not important and will also be omitted when copying to `.git/hooks`.

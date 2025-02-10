@@ -1,3 +1,7 @@
+## 1.1.4
+
+- Post uninstall won't be ran because all files deleted, so it become pre uninstall
+ 
 ## 1.1.3
 
 - Set core hooksPath

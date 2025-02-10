@@ -94,6 +94,7 @@ class RemoteHooks {
     final localHookDirectory = await gitHelper.getLocalHooksDirectory();
     final process = logger.progress("Uninstalling hooks...");
     await hooksConfig.loadConfig(directory: localHookDirectory);
+    await hooksIgnore.loadFromDirectory(localHookDirectory);
 
     await hooksIgnore.cleanIgnored(localHookDirectory);
     await hooksConfig.cleanUpFiles(localHookDirectory);

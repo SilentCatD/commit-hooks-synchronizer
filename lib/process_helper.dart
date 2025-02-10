@@ -20,10 +20,10 @@ class ProcessHelper {
     return result.stdout.toString().trim();
   }
 
-  Future<void> executeFileIfExist(File file) async {
+  Future<String?> executeFileIfExist(File file) async {
     if (!await file.exists()) {
-      return;
+      return null;
     }
-    await executeCommand(file.path, []);
+    return await executeCommand(file.path, []);
   }
 }

@@ -92,7 +92,9 @@ class RemoteHooks {
 
   Future<void> uninstall() async {
     final localHookDirectory = await gitHelper.getLocalHooksDirectory();
-    final process = logger.progress("Uninstalling hooks...");
+
+    logger.stdout("Uninstalling hooks...");
+
     await hooksConfig.loadConfig(directory: localHookDirectory);
     await hooksIgnore.loadFromDirectory(localHookDirectory);
 
@@ -100,7 +102,7 @@ class RemoteHooks {
     await hooksIgnore.cleanIgnored(localHookDirectory);
     await hooksConfig.cleanUpFiles(localHookDirectory);
 
-    process.finish(message: "Hooks uninstalled!");
+    logger.stdout("Hooks uninstalled!");
   }
 
   Future<void> exitOnFail(FutureOr<void> func) async {

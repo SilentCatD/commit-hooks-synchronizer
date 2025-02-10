@@ -1,3 +1,7 @@
+## 1.1.6
+
+- Fix bug execute stdin/out/err
+ 
 ## 1.1.5
 
 - Fix bug not found file

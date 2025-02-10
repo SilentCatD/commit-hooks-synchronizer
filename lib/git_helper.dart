@@ -49,12 +49,23 @@ class GitHelper {
     return _gitDirectoryRoot!;
   }
 
+  Future<void> setCoreHooksPath(Directory directory) async {
+    final repositoryRoot = await gitDirectoryRoot;
+    final relativePath = relative(directory.path, from: repositoryRoot.path);
+    await processHelper.executeCommand(
+      "git",
+      ["config", "core.hooksPath", relativePath],
+      workingDirectory: repositoryRoot.path,
+    );
+  }
+
   Future<Directory> getLocalHooksDirectory() async {
     final repositoryRoot = await gitDirectoryRoot;
     final directory = Directory((join(repositoryRoot.path, '.git/hooks')));
     if (!await directory.exists()) {
       await directory.create();
     }
+    await setCoreHooksPath(directory);
     return directory;
   }
 

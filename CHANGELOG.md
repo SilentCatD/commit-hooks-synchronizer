@@ -1,3 +1,7 @@
+## 1.1.1
+
+- Update doc
+
 ## 1.1.0
 
 - Add install and uninstall scripts

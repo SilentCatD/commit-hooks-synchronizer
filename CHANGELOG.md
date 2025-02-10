@@ -1,3 +1,8 @@
+## 1.1.3
+
+- Set core hooksPath
+
+
 ## 1.1.2
 
 - Handle case not have local hooks

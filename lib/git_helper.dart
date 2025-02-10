@@ -27,11 +27,11 @@ class GitHelper {
     "update",
     // new supported
     "post-install",
-    "post-uninstall",
+    "pre-uninstall",
   };
 
   static const postInstall = 'post-install';
-  static const postUninstall = 'post-uninstall';
+  static const preUninstall = 'pre-uninstall';
 
   final ProcessHelper processHelper;
   final FileHelper fileHelper;
@@ -74,7 +74,7 @@ class GitHelper {
   }
 
   Future<void> executePreUninstall(Directory directory) async {
-    final file = File(join(directory.path, postUninstall));
+    final file = File(join(directory.path, preUninstall));
     await processHelper.executeFileIfExist(file);
   }
 

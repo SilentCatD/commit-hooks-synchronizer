@@ -51,7 +51,11 @@ class GitHelper {
 
   Future<Directory> getLocalHooksDirectory() async {
     final repositoryRoot = await gitDirectoryRoot;
-    return Directory((join(repositoryRoot.path, '.git/hooks')));
+    final directory = Directory((join(repositoryRoot.path, '.git/hooks')));
+    if (!await directory.exists()) {
+      await directory.create();
+    }
+    return directory;
   }
 
   Future<void> executePostInstall(Directory directory) async {

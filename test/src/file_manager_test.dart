@@ -129,6 +129,7 @@ void main() {
   group('files copy', () {
     test('copy all', () async {
       final directory = Directory('test/fixtures/iterable_directory');
+      // not pre-created to test destination creation
       final testDirectory = Directory('test/iterable_directory_copied');
       final visited = <String, int>{};
       await fileManager.copy(

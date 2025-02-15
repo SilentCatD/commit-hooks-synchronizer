@@ -1,8 +1,11 @@
 import 'dart:io';
 
+import 'package:io/io.dart';
 import 'package:path/path.dart';
 import 'package:remote_hooks/src/file_manager.dart';
 import 'package:test/test.dart';
+
+import '../fixtures/file.dart';
 
 void main() {
   const existedFilePath = 'test/fixtures/test-file.txt';
@@ -54,5 +57,71 @@ void main() {
     expect(basename(path).startsWith(FileManager.tempDirPrefix), true);
 
     addTearDown(tempDirectory.deleteSync);
+  });
+
+  group('directory children visitor', () {
+    test('visit children', () async {
+      final directory = Directory('test/fixtures/iterable_directory');
+      final visited = <String, int>{};
+      await fileManager.visit(directory, (entity, depth) async {
+        visited[relative(entity.path, from: directory.path)] = depth;
+        return true;
+      });
+
+      expect(visited.length, availableIterableDirectory.length);
+      for (final entry in visited.entries) {
+        expect(availableIterableDirectory.containsKey(entry.key), true);
+        expect(availableIterableDirectory[entry.key], entry.value);
+      }
+    });
+
+    test('skip visit children', () async {
+      final directory = Directory('test/fixtures/iterable_directory');
+      final visited = <String, int>{};
+      await fileManager.visit(directory, (entity, depth) async {
+        final relativePath = relative(entity.path, from: directory.path);
+        visited[relativePath] = depth;
+        if (relativePath == 'directory2') {
+          return false;
+        }
+        return true;
+      });
+      // skip visit:
+      // - directory2/directory3
+      // - directory2/directory3/file4.txt
+      // - directory2/directory3/file5.txt
+      expect(visited.length, availableIterableDirectory.length - 3);
+      for (final entry in visited.entries) {
+        expect(entry.key.startsWith('directory2/directory3'), false);
+      }
+    });
+  });
+
+  test('skip visit because deleted', () async {
+    final directory = Directory('test/fixtures/iterable_directory');
+
+    final testDirectory = Directory('test/fixtures/iterable_directory2');
+    await testDirectory.create();
+
+    await copyPath(directory.path, testDirectory.path);
+
+    final visited = <String, int>{};
+    await fileManager.visit(testDirectory, (entity, depth) async {
+      final relativePath = relative(entity.path, from: testDirectory.path);
+      visited[relativePath] = depth;
+      if (relativePath == 'directory2') {
+        await entity.delete(recursive: true);
+      }
+      return true;
+    });
+    // skip visit:
+    // - directory2/directory3
+    // - directory2/directory3/file4.txt
+    // - directory2/directory3/file5.txt
+    expect(visited.length, availableIterableDirectory.length - 3);
+    for (final entry in visited.entries) {
+      expect(entry.key.startsWith('directory2/directory3'), false);
+    }
+    addTearDown(() => testDirectory.delete(recursive: true));
   });
 }

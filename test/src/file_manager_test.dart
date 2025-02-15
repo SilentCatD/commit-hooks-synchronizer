@@ -95,32 +95,87 @@ void main() {
         expect(entry.key.startsWith('directory2/directory3'), false);
       }
     });
+
+    test('skip visit because deleted', () async {
+      final directory = Directory('test/fixtures/iterable_directory');
+
+      final testDirectory = Directory('test/fixtures/iterable_directory2');
+      await testDirectory.create();
+
+      await copyPath(directory.path, testDirectory.path);
+
+      final visited = <String, int>{};
+      await fileManager.visit(testDirectory, (entity, depth) async {
+        final relativePath = relative(entity.path, from: testDirectory.path);
+        visited[relativePath] = depth;
+        if (relativePath == 'directory2') {
+          await entity.delete(recursive: true);
+        }
+        return true;
+      });
+      // skip visit:
+      // - directory2/directory3
+      // - directory2/directory3/file4.txt
+      // - directory2/directory3/file5.txt
+      expect(visited.length, availableIterableDirectory.length - 3);
+      for (final entry in visited.entries) {
+        expect(entry.key.startsWith('directory2/directory3'), false);
+      }
+      addTearDown(() => testDirectory.delete(recursive: true));
+    });
   });
 
-  test('skip visit because deleted', () async {
-    final directory = Directory('test/fixtures/iterable_directory');
+  group('files copy', () {
+    test('copy all', () async {
+      final directory = Directory('test/fixtures/iterable_directory');
+      final testDirectory = Directory('test/fixtures/iterable_directory3');
+      final visited = <String, int>{};
+      await fileManager.copy(
+        directory,
+        testDirectory,
+        postCopy: (entity, depth) async {
+          final relativePath = relative(entity.path, from: testDirectory.path);
+          visited[relativePath] = depth;
+        },
+      );
 
-    final testDirectory = Directory('test/fixtures/iterable_directory2');
-    await testDirectory.create();
-
-    await copyPath(directory.path, testDirectory.path);
-
-    final visited = <String, int>{};
-    await fileManager.visit(testDirectory, (entity, depth) async {
-      final relativePath = relative(entity.path, from: testDirectory.path);
-      visited[relativePath] = depth;
-      if (relativePath == 'directory2') {
-        await entity.delete(recursive: true);
+      expect(visited.length, availableIterableDirectory.length);
+      for (final entry in visited.entries) {
+        expect(availableIterableDirectory.containsKey(entry.key), true);
+        expect(availableIterableDirectory[entry.key], entry.value);
       }
-      return true;
+      addTearDown(() => testDirectory.delete(recursive: true));
     });
+  });
+
+  test('not copy directory 2', () async {
+    final directory = Directory('test/fixtures/iterable_directory');
+    final testDirectory = Directory('test/fixtures/iterable_directory4');
+    final visited = <String, int>{};
+    await fileManager.copy(
+      directory,
+      testDirectory,
+      postCopy: (entity, depth) async {
+        final relativePath = relative(entity.path, from: testDirectory.path);
+        visited[relativePath] = depth;
+      },
+      shouldCopy: (entity, depth) {
+        final relativePath = relative(entity.path, from: directory.path);
+        if (relativePath == 'directory2') {
+          return false;
+        }
+        return true;
+      },
+    );
+
     // skip visit:
+    // - directory2
     // - directory2/directory3
     // - directory2/directory3/file4.txt
     // - directory2/directory3/file5.txt
-    expect(visited.length, availableIterableDirectory.length - 3);
+    expect(visited.length, availableIterableDirectory.length - 4);
     for (final entry in visited.entries) {
-      expect(entry.key.startsWith('directory2/directory3'), false);
+      expect(entry.key.startsWith('directory2'), false);
     }
     addTearDown(() => testDirectory.delete(recursive: true));
   });

@@ -101,8 +101,8 @@ void main() {
     test('skip visit because deleted', () async {
       final directory = Directory('test/fixtures/iterable_directory');
 
-      final testDirectory = Directory('test/fixtures/iterable_directory2');
-      await testDirectory.create();
+      final testDirectory = await fileManager
+          .createTemporaryDirectory(Directory('test/fixtures'));
 
       await copyPath(directory.path, testDirectory.path);
 
@@ -129,7 +129,7 @@ void main() {
   group('files copy', () {
     test('copy all', () async {
       final directory = Directory('test/fixtures/iterable_directory');
-      final testDirectory = Directory('test/fixtures/iterable_directory3');
+      final testDirectory = Directory('test/iterable_directory_copied');
       final visited = <String, int>{};
       await fileManager.copy(
         directory,
@@ -151,7 +151,8 @@ void main() {
 
   test('not copy directory 2', () async {
     final directory = Directory('test/fixtures/iterable_directory');
-    final testDirectory = Directory('test/fixtures/iterable_directory4');
+    final testDirectory =
+        await fileManager.createTemporaryDirectory(Directory('test/fixtures'));
     final visited = <String, int>{};
     await fileManager.copy(
       directory,

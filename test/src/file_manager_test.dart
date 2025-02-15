@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:path/path.dart';
 import 'package:remote_hooks/src/file_manager.dart';
 import 'package:test/test.dart';
 
@@ -29,10 +30,10 @@ void main() {
 
   group('loadFileAsString', () {
     test('file exist', () async {
-      final fileContent =
+      final loadedFileContent =
           await fileManager.loadFileAsString(path: existedFilePath);
-      expect(fileContent, isNot(null));
-      expect(fileContent, fileContent);
+      expect(loadedFileContent, isNot(null));
+      expect(loadedFileContent, fileContent);
     });
     test('file not exist', () async {
       final fileContent =
@@ -40,5 +41,18 @@ void main() {
       expect(fileContent, null);
       expect(fileContent, isA<String?>());
     });
+  });
+
+  test('create temporary directory', () async {
+    final rootDirectory = Directory('test/fixtures');
+    final tempDirectory =
+        await fileManager.createTemporaryDirectory(rootDirectory);
+    final path = tempDirectory.path;
+
+    expect(tempDirectory.existsSync(), true);
+    expect(path.startsWith(rootDirectory.path), true);
+    expect(basename(path).startsWith(FileManager.tempDirPrefix), true);
+
+    addTearDown(tempDirectory.deleteSync);
   });
 }

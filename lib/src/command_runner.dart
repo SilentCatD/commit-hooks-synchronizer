@@ -1,8 +1,11 @@
+@MappableLib(generateInitializerForScope: InitializerScope.directory)
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:cli_completion/cli_completion.dart';
+import 'package:dart_mappable/dart_mappable.dart';
 import 'package:mason_logger/mason_logger.dart';
 import 'package:pub_updater/pub_updater.dart';
+import 'package:remote_hooks/src/command_runner.init.dart';
 import 'package:remote_hooks/src/commands/commands.dart';
 import 'package:remote_hooks/src/version.dart';
 
@@ -41,6 +44,8 @@ class RemoteHooksCommandRunner extends CompletionCommandRunner<int> {
     // Add sub commands
     addCommand(SampleCommand(logger: _logger));
     addCommand(UpdateCommand(logger: _logger, pubUpdater: _pubUpdater));
+    // init mappers for dart_mappable
+    initializeMappers();
   }
 
   @override

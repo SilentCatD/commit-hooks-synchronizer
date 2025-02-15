@@ -29,11 +29,22 @@ class ProcessExecutor {
     if (!file.existsSync()) {
       return 0;
     }
-    final process = await _processManager.start([file.path], runInShell: true);
-    await process.stdout.transform(utf8.decoder).forEach(_logger.detail);
-    await process.stderr.transform(utf8.decoder).forEach((stdErrData) {
-      _logger.detail(stdErrData, style: _logger.theme.err);
-    });
-    return process.exitCode;
+    return executeFile(file);
+  }
+
+  Future<int> executeFile(File file) async {
+    try {
+      _logger.detail(file.path);
+      final process =
+          await _processManager.start([file.path], runInShell: true);
+      await process.stdout.transform(utf8.decoder).forEach(_logger.detail);
+      await process.stderr.transform(utf8.decoder).forEach((stdErrData) {
+        _logger.detail(stdErrData, style: _logger.theme.err);
+      });
+      return process.exitCode;
+    } catch (error) {
+      _logger.detail('$error', style: _logger.theme.err);
+      rethrow;
+    }
   }
 }

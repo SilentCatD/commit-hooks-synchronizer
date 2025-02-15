@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart';
-import 'package:remote_hooks/src/process_helper.dart';
+import 'package:remote_hooks/src/process_executor.dart';
 
 typedef FileSystemEntityVisitor = Future<void> Function(
   FileSystemEntity entity,

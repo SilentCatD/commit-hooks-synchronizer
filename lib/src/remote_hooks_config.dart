@@ -14,9 +14,7 @@ class RemoteHooksConfig with RemoteHooksConfigMappable {
     this.ref,
   }) {
     if (gitUrl.isEmpty) {
-      throw const FormatException(
-        girUrlEmptyMessage,
-      );
+      throw const FormatException(girUrlEmptyMessage);
     }
   }
 

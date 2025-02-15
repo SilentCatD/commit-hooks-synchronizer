@@ -1,9 +1,14 @@
 import 'dart:io';
 
+import 'package:path/path.dart';
+
 typedef FileSystemEntityVisitor = Future<bool> Function(
   FileSystemEntity entity,
   int depth,
 );
+
+typedef ShouldCopy = bool Function(FileSystemEntity source, int depth);
+typedef PostCopy = Future<void> Function(FileSystemEntity entity, int depth);
 
 class FileManager {
   static const tempDirPrefix = 'remotehooks-';
@@ -31,16 +36,16 @@ class FileManager {
     FileSystemEntityVisitor visitor,
     int depth,
   ) async {
+    if (!directory.existsSync()) {
+      return;
+    }
     await for (final entity in directory.list()) {
       if (entity is Directory) {
         final shouldVisitChildren = await visitor.call(entity, depth);
         if (!shouldVisitChildren) {
           continue;
         }
-        // visitor may delete entity
-        if (entity.existsSync()) {
-          await _performVisit(entity.absolute, visitor, depth + 1);
-        }
+        await _performVisit(entity.absolute, visitor, depth + 1);
       } else if (entity is File) {
         await visitor.call(entity, depth);
       }
@@ -52,5 +57,36 @@ class FileManager {
     FileSystemEntityVisitor visitor,
   ) async {
     return _performVisit(directory, visitor, 0);
+  }
+
+  Future<void> copy(
+    Directory source,
+    Directory destination, {
+    ShouldCopy? shouldCopy,
+    PostCopy? postCopy,
+  }) async {
+    if (!source.existsSync()) {
+      return;
+    }
+    if (!destination.existsSync()) {
+      await destination.create();
+    }
+    await visit(source, (entity, depth) async {
+      final relativePath = relative(entity.path, from: source.path);
+      final shouldCopyEntity = shouldCopy?.call(entity, depth) ?? true;
+      if (!shouldCopyEntity) {
+        return false;
+      }
+      if (entity is Directory) {
+        final newDirectory =
+            Directory(join(destination.absolute.path, relativePath));
+        await newDirectory.create();
+        await postCopy?.call(newDirectory, depth);
+      } else if (entity is File) {
+        final copied = await entity.copy(join(destination.path, relativePath));
+        await postCopy?.call(copied, depth);
+      }
+      return true;
+    });
   }
 }

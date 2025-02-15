@@ -65,7 +65,6 @@ void main() {
       final visited = <String, int>{};
       await fileManager.visit(directory, (entity, depth) async {
         visited[relative(entity.path, from: directory.path)] = depth;
-        return true;
       });
 
       expect(visited.length, availableIterableDirectory.length);
@@ -81,18 +80,21 @@ void main() {
       await fileManager.visit(directory, (entity, depth) async {
         final relativePath = relative(entity.path, from: directory.path);
         visited[relativePath] = depth;
+      }, shouldVisit: (entity, depth) {
+        final relativePath = relative(entity.path, from: directory.path);
         if (relativePath == 'directory2') {
           return false;
         }
         return true;
       });
       // skip visit:
+      // - directory2
       // - directory2/directory3
       // - directory2/directory3/file4.txt
       // - directory2/directory3/file5.txt
-      expect(visited.length, availableIterableDirectory.length - 3);
+      expect(visited.length, availableIterableDirectory.length - 4);
       for (final entry in visited.entries) {
-        expect(entry.key.startsWith('directory2/directory3'), false);
+        expect(entry.key.startsWith('directory2'), false);
       }
     });
 
@@ -111,7 +113,6 @@ void main() {
         if (relativePath == 'directory2') {
           await entity.delete(recursive: true);
         }
-        return true;
       });
       // skip visit:
       // - directory2/directory3

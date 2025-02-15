@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart';
+import 'package:remote_hooks/src/process_helper.dart';
 
 typedef FileSystemEntityVisitor = Future<void> Function(
   FileSystemEntity entity,
@@ -11,7 +13,11 @@ typedef ShouldVisit = bool Function(FileSystemEntity source, int depth);
 typedef PostCopy = Future<void> Function(FileSystemEntity entity, int depth);
 
 class FileManager {
+  FileManager({ProcessExecutor? processExecutor})
+      : _processExecutor = processExecutor ?? ProcessExecutor();
   static const tempDirPrefix = 'remotehooks-';
+
+  final ProcessExecutor _processExecutor;
 
   File? loadFile({required String path}) {
     final file = File(path);
@@ -25,6 +31,35 @@ class FileManager {
     }
     final contents = await file.readAsString();
     return contents;
+  }
+
+  Future<File> writeFileAsString({
+    required String path,
+    required String contents,
+  }) async {
+    final file = File(path);
+    if (!file.existsSync()) {
+      await file.create();
+    }
+    await file.writeAsString(contents);
+    return file;
+  }
+
+  Future<File> writeFileAsMap({
+    required String path,
+    required Map<String, dynamic> contents,
+  }) async {
+    final stringFormat = jsonEncode(contents);
+    return writeFileAsString(path: path, contents: stringFormat);
+  }
+
+  Future<Map<String, dynamic>?> loadFileAsMap({required String path}) async {
+    final contents = await loadFileAsString(path: path);
+    if (contents == null) {
+      return null;
+    }
+    final jsonFormat = jsonDecode(contents) as Map<String, dynamic>;
+    return jsonFormat;
   }
 
   Future<Directory> createTemporaryDirectory([Directory? directory]) async {
@@ -93,5 +128,20 @@ class FileManager {
       },
       shouldVisit: shouldCopy,
     );
+  }
+
+  Future<void> delete(FileSystemEntity entity) async {
+    if (entity.existsSync()) {
+      await entity.delete(recursive: true);
+    }
+  }
+
+  Future<void> grantExecutionPermission(File file) async {
+    if (!file.existsSync()) {
+      return;
+    }
+    if (!Platform.isWindows) {
+      await _processExecutor.executeCommand(['chmod', '+x', file.path]);
+    }
   }
 }

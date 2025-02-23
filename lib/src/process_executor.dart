@@ -43,7 +43,7 @@ class ProcessExecutor {
       unawaited(process.stdout.transform(utf8.decoder).forEach(_logger.detail));
       unawaited(process.stderr.transform(utf8.decoder).forEach((stdErrData) {
         _logger.detail(stdErrData, style: _logger.theme.err);
-      }));
+      }),);
       return process.exitCode;
     } catch (error) {
       _logger.detail('$error', style: _logger.theme.err);

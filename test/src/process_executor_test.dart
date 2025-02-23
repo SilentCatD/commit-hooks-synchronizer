@@ -7,6 +7,7 @@ import 'package:process/process.dart';
 import 'package:remote_hooks/src/process_executor.dart';
 import 'package:test/test.dart';
 
+import '../fixtures/file.dart';
 import '../fixtures/processor.dart';
 
 class _MockLogger extends Mock implements Logger {}
@@ -26,8 +27,6 @@ void main() {
   final workingDirectory = Directory.current.path;
   final processResult = ProcessResult(999, 0, 'stdout', 'stderr');
   const logTheme = LogTheme();
-  final executableFile = File('test/fixtures/test_run.sh');
-  final nonExistedFile = File('test/fixtures/non-existed.sh');
   final processException = ProcessException(
     executable,
     arguments,
@@ -59,9 +58,12 @@ void main() {
 
   group('test execute command', () {
     test('process manager not throw', () async {
-      when(() => processManager.run(any(),
-              workingDirectory: any(named: 'workingDirectory')))
-          .thenAnswer((_) async => processResult);
+      when(
+        () => processManager.run(
+          any(),
+          workingDirectory: any(named: 'workingDirectory'),
+        ),
+      ).thenAnswer((_) async => processResult);
 
       final result = await processExecutor.executeCommand(
         command,
@@ -78,8 +80,10 @@ void main() {
     });
     test('process manager throw', () async {
       when(
-        () => processManager.run(any(),
-            workingDirectory: any(named: 'workingDirectory')),
+        () => processManager.run(
+          any(),
+          workingDirectory: any(named: 'workingDirectory'),
+        ),
       ).thenThrow(processException);
 
       Future<ProcessResult> execute() async {
@@ -90,12 +94,13 @@ void main() {
       }
 
       expect(
-          execute(),
-          throwsA(
-            const TypeMatcher<ProcessException>()
-                .having((err) => err.executable, 'executable', executable)
-                .having((err) => err.arguments, 'arguments', arguments),
-          ));
+        execute(),
+        throwsA(
+          const TypeMatcher<ProcessException>()
+              .having((err) => err.executable, 'executable', executable)
+              .having((err) => err.arguments, 'arguments', arguments),
+        ),
+      );
       verify(() => logger.theme).called(1);
       verify(() => logger.detail(fullCommand)).called(1);
       verify(() => logger.detail('$processException', style: logTheme.err))

@@ -45,6 +45,15 @@ class FileManager {
     return file;
   }
 
+  Future<List<String>?> loadFileAsLines({required String path}) async {
+    final file = loadFile(path: path);
+    if (file == null) {
+      return null;
+    }
+    final contents = await file.readAsLines();
+    return contents;
+  }
+
   Future<File> writeFileAsMap({
     required String path,
     required Map<String, dynamic> contents,
